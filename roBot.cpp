@@ -1,0 +1,143 @@
+#include<cstdio>
+#include<cstdlib>
+
+bool map[1000][1000];
+bool clean[1000][1000];
+int rx,ry;//x y
+char c[1002];
+int BFS[1000][1000];
+int dx[4]={1,0,-1,0},dy[4]={0,1,0,-1};
+
+
+
+typedef struct node {
+    int x,y;
+    struct node *next;
+} node_t;
+
+
+node_t *head = NULL;
+node_t *rear = NULL;
+
+
+
+void enqueue(int x,int y) {
+    node_t *new_node = (node*)malloc(sizeof(node_t));
+    if (!new_node) return;
+	
+	if(head==NULL){
+		head=new_node;
+		rear=new_node;
+	}
+    new_node->x = x;
+    new_node->y = y;
+    rear->next=new_node;
+    rear=new_node;
+    new_node->next=NULL;
+        
+}
+
+void dequeue(){
+	if(head==NULL)return;
+	else{
+		node_t *current=head;
+		head=head->next;
+		free(current);
+		if(head==NULL)rear=NULL;
+		return;
+	
+	}
+		
+}
+
+
+
+
+
+
+
+
+int main(){
+	int n,m,b;
+	while(scanf("%d%d%d",&n,&m,&b)!=EOF){
+		for(int i=0;i<n;i++){
+			scanf("%s",c);
+			for(int j=0;j<m;++j){
+				if(c[j]=='R'||c[j]=='r'){rx=i;ry=j;clean[i][j]=map[i][j]=1;/*puts("rr");*/BFS[i][j]=-1;}
+				else if(c[j]=='1'){clean[i][j]=map[i][j]=1; /*puts("gg");*/BFS[i][j]=-1;}
+				else {clean[i][j]=map[i][j]=0;/*puts("zz");*/BFS[i][j]=0;}
+				//printf("%c ",c[j]);
+			}
+		}	
+		
+		enqueue(rx,ry);
+		
+		node_t now=*head;
+			dequeue();
+			int nx,ny;
+			for(int i=0;i<4;++i){
+				nx=now.x+dx[i];ny=now.y+dy[i];
+				if(nx<0||nx>=n||ny<0||ny>=m)continue;
+				if(BFS[nx][ny]==0){
+					BFS[nx][ny]=1;			
+					enqueue(nx,ny);
+					printf("%d %d\n",nx,ny);
+				}
+		
+			
+			}
+			
+			
+/*			for(int k=0;k<20;++k){
+				node_t now=*head;
+				dequeue();
+				int nx,ny;
+				for(int i=0;i<4;++i){
+					nx=now.x+dx[i];ny=now.y+dy[i];
+					if(BFS[nx][ny]==0){
+						BFS[nx][ny]=BFS[now.x][now.y]+1;			
+						enqueue(nx,ny);
+						printf("%d %d\n",nx,ny);
+					}
+		
+			
+				}
+			
+			
+			
+			}
+*/		
+		
+		while(head!=NULL){
+			node_t now=*head;
+			dequeue();
+			int nx,ny;
+			for(int i=0;i<4;++i){
+				nx=now.x+dx[i];ny=now.y+dy[i];
+				if(BFS[nx][ny]==0){
+					BFS[nx][ny]=BFS[now.x][now.y]+1;			
+					enqueue(nx,ny);
+					printf("%d %d\n",nx,ny);
+				}
+		
+			
+			}
+		
+		}
+	
+		printf("%d %d\n",rx,ry);
+		for(int i=0;i<n;i++){
+			for(int j=0;j<m;++j)
+				if(i==rx&&j==ry)printf("R ");
+				else printf("%d ",map[i][j]);
+			printf("\n");
+		}
+		
+		for(int i=0;i<n;i++){
+			for(int j=0;j<m;++j)
+				printf("%d\t",BFS[i][j]);
+			printf("\n");
+		}
+	}
+	return 0;
+}
